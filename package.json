@@ -1,18 +1,7 @@
 {
   "name": "connect-traversal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Middleware for Connect that allows to use URL traversal instead of URL dispatching.",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dmnorc/connect-traversal.git"
-  },
   "keywords": [
     "traverse",
     "traversing",
@@ -20,6 +9,32 @@
     "express",
     "dispatch"
   ],
-  "author": "Dmitry Sedelnikov",
-  "license": "BSD"
+  "author": "Dmitry Sedelnikov <dmnorc@gmail.com>",
+  "main": "index.js",
+  "directories": {
+    "test": "test",
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "mocha": "1.x",
+    "connect": ">= 1.x",
+    "supertest": "0.8.2"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmnorc/connect-traversal.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ],
+  "engines": "node >= 0.6.x",
+  "readmeFilename": "README.md",
+  "_id": "connect-traversal@0.1.1",
+  "_from": "connect-traversal@latest"
 }

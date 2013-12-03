@@ -1,3 +1,3 @@
-module.exports = process.env.CONNECT_COV
-    ? require('./lib-cov/traverse')
-    : require('./lib/traverse');
+module.exports = process.env.CONNECT_TRAVERSAL_COV
+    ? require('./lib-cov/traversal')
+    : require('./lib/traversal');
