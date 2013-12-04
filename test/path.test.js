@@ -93,6 +93,7 @@ describe('Path tests: ', function () {
             assert.ok(req.resource);
             assert.equal(req.resource.resource, 'rootResource');
             assert.equal(req.pathname, 'xxx');
+            assert.equal(req.buildResourceUrl(req.resource, 'xxx'), req.url);
             assert.ok(req.subpath);
             res.setHeader("Content-Length", 1);
             res.write("3");
@@ -112,6 +113,7 @@ describe('Path tests: ', function () {
             assert.ok(req.resource);
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
+            assert.equal(req.buildResourceUrl(req.resource), req.url);
             assert.equal(req.resource.parent.resource, 'testResource');
             res.setHeader("Content-Length", 1);
             res.write("5");
@@ -155,7 +157,7 @@ describe('Path tests: ', function () {
 
     it('request to Resource with specified HTTP method and path name', function(done) {
         request(app)
-            .post('/xxx/123')
+            .post('/xxx')
             .expect(200)
             .end(function(err, res){
                 if (err) return done(err);
