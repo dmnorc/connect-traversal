@@ -8,42 +8,46 @@ var assert = require('assert')
     ,traversal = require('../');
 
 describe('Unregistered path test: ', function () {
+    before(function(done){
+        traversal.clear();
+        done();
+    });
+
     it('try to register path for unregistered resource', function (done) {
-        var travers = traversal(connect());
         try {
-            travers.registerResourcePath('testResource', {}, function(req, res){});
+            traversal.registerResourcePath('testResource', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
-        travers.registerResource('testResource', {
+        traversal.registerResource('testResource', {
             testAttr2: 2
         });
         try {
-            travers.registerResourcePath('testResource', {}, function(req, res){});
+            traversal.registerResourcePath('testResource', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
-        travers.setRootResource('testResource');
+        traversal.setRootResource('testResource');
 
         try {
-            travers.registerResourcePath('asd', {}, function(req, res){});
-            assert.fail();
-        } catch (e) {
-            assert.ok(e);
-        }
-
-        try {
-            travers.registerResourcePath('testResource', {});
+            traversal.registerResourcePath('asd', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            travers.registerResourcePath('testResource', {}, 'asd');
+            traversal.registerResourcePath('testResource', {});
+            assert.fail();
+        } catch (e) {
+            assert.ok(e);
+        }
+
+        try {
+            traversal.registerResourcePath('testResource', {}, 'asd');
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -54,21 +58,22 @@ describe('Unregistered path test: ', function () {
 
 describe('Path tests: ', function () {
     var app = connect();
-    var travers = traversal(app);
+    app.use(traversal.middleware);
 
     before(function(done){
-        travers.registerResource('rootResource', {
+        traversal.clear();
+        traversal.registerResource('rootResource', {
             children: {'test': 'testResource', 'par': 'parResource'},
             testAttr: 1
         });
-        travers.registerResource('testResource', {
+        traversal.registerResource('testResource', {
             children: {'par': 'parResource'},
             testAttr2: 2
         });
-        travers.registerResource('parResource', {});
-        travers.setRootResource('rootResource');
+        traversal.registerResource('parResource', {});
+        traversal.setRootResource('rootResource');
 
-        travers.registerResourcePath('rootResource', {}, function(req, res){
+        traversal.registerResourcePath('rootResource', {}, function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
             assert.ok(!req.pathName);
@@ -76,7 +81,7 @@ describe('Path tests: ', function () {
             res.write("1");
             res.end();
         });
-        travers.registerResourcePath('rootResource', {method: 'post'}, function(req, res){
+        traversal.registerResourcePath('rootResource', {method: 'post'}, function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.pathName);
             assert.ok(!req.subpath);
@@ -84,7 +89,7 @@ describe('Path tests: ', function () {
             res.write("2");
             res.end();
         });
-        travers.registerResourcePath('rootResource', {method: 'POST', name: 'xxx'}, function(req, res){
+        traversal.registerResourcePath('rootResource', {method: 'POST', name: 'xxx'}, function(req, res){
             assert.ok(req.resource);
             assert.equal(req.resource.resource, 'rootResource');
             assert.equal(req.pathName, 'xxx');
@@ -93,7 +98,7 @@ describe('Path tests: ', function () {
             res.write("3");
             res.end();
         });
-        travers.registerResourcePath('testResource', {}, function(req, res){
+        traversal.registerResourcePath('testResource', {}, function(req, res){
             assert.equal(req.resource.resource, 'testResource');
             assert.ok(!req.pathName);
             assert.ok(!req.subpath);
@@ -103,7 +108,7 @@ describe('Path tests: ', function () {
             res.end();
         });
 
-        travers.registerResourcePath('parResource', {parent: 'testResource'}, function(req, res){
+        traversal.registerResourcePath('parResource', {parent: 'testResource'}, function(req, res){
             assert.ok(req.resource);
             assert.ok(!req.pathName);
             assert.ok(!req.subpath);

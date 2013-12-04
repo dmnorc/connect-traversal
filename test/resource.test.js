@@ -3,24 +3,19 @@
  */
 
 var assert = require('assert')
-    , connect = require('connect')
+    ,connect = require('connect')
     ,traversal = require('../');
 
 
 describe('Resource register tests: ', function () {
-    it('Try to initialize with not a connect instance', function (done) {
-        try {
-            traversal({});
-            assert.fail();
-        } catch(e) {
-            assert.ok(e);
-        }
+    beforeEach(function(done){
+        traversal.clear();
         done();
     });
+
     it('Try to set as root unregistered resource', function (done) {
-        var travers = traversal(connect());
         try {
-            travers.setRootResource('rootResource');
+            traversal.setRootResource('rootResource');
             assert.fail();
         } catch(e) {
             assert.ok(e);
@@ -29,24 +24,23 @@ describe('Resource register tests: ', function () {
     });
 
     it('Register `testResource` and `testItemResource` resource', function (done) {
-        var travers = traversal(connect());
-        travers.registerResource('rootResource', {
+        traversal.registerResource('rootResource', {
             children: {'test': 'testResource'},
             testAttr: 1,
             testMethod: function() { return this.testAttr + 1}
         });
-        travers.registerResource('testResource', {
+        traversal.registerResource('testResource', {
             child: 'testItemResource',
             testAttr2: 2
         });
-        travers.registerResource('testItemResource', {
+        traversal.registerResource('testItemResource', {
             child: 'asd',
             children: {'test': 'asd'},
             getId: function() { return parseInt(this.name) }
         });
-        travers.setRootResource('rootResource');
+        traversal.setRootResource('rootResource');
 
-        var root = travers.initResource('rootResource', 'test');
+        var root = traversal.initResource('rootResource', 'test');
         assert.equal(root.testAttr, 1);
         assert.equal(root.testMethod(), 2);
         assert.ok(!root.parent);
@@ -61,14 +55,14 @@ describe('Resource register tests: ', function () {
         assert.equal(testItem.getId(), 123);
 
         try {
-            testItem.get('123')
+            testItem.get('123');
             assert.fail();
         } catch(e) {
             assert.ok(e);
         }
 
         try {
-            testItem.get('test')
+            testItem.get('test');
             assert.fail();
         } catch(e) {
             assert.ok(e);
