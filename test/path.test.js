@@ -76,14 +76,14 @@ describe('Path tests: ', function () {
         traversal.registerResourcePath('rootResource', {}, function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
-            assert.ok(!req.pathName);
+            assert.ok(!req.pathname);
             res.setHeader("Content-Length", 1);
             res.write("1");
             res.end();
         });
         traversal.registerResourcePath('rootResource', {method: 'post'}, function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
-            assert.ok(!req.pathName);
+            assert.ok(!req.pathname);
             assert.ok(!req.subpath);
             res.setHeader("Content-Length", 1);
             res.write("2");
@@ -92,7 +92,7 @@ describe('Path tests: ', function () {
         traversal.registerResourcePath('rootResource', {method: 'POST', name: 'xxx'}, function(req, res){
             assert.ok(req.resource);
             assert.equal(req.resource.resource, 'rootResource');
-            assert.equal(req.pathName, 'xxx');
+            assert.equal(req.pathname, 'xxx');
             assert.ok(req.subpath);
             res.setHeader("Content-Length", 1);
             res.write("3");
@@ -100,7 +100,7 @@ describe('Path tests: ', function () {
         });
         traversal.registerResourcePath('testResource', {}, function(req, res){
             assert.equal(req.resource.resource, 'testResource');
-            assert.ok(!req.pathName);
+            assert.ok(!req.pathname);
             assert.ok(!req.subpath);
             assert.equal(req.resource.parent.resource, 'rootResource');
             res.setHeader("Content-Length", 1);
@@ -110,7 +110,7 @@ describe('Path tests: ', function () {
 
         traversal.registerResourcePath('parResource', {parent: 'testResource'}, function(req, res){
             assert.ok(req.resource);
-            assert.ok(!req.pathName);
+            assert.ok(!req.pathname);
             assert.ok(!req.subpath);
             assert.equal(req.resource.parent.resource, 'testResource');
             res.setHeader("Content-Length", 1);

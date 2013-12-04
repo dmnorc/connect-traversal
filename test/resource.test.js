@@ -36,7 +36,7 @@ describe('Resource register tests: ', function () {
         traversal.registerResource('testItemResource', {
             child: 'asd',
             children: {'test': 'asd'},
-            getId: function() { return parseInt(this.name) }
+            getId: function() { return parseInt(this.key) }
         });
         traversal.setRootResource('rootResource');
 
@@ -44,13 +44,13 @@ describe('Resource register tests: ', function () {
         assert.equal(root.testAttr, 1);
         assert.equal(root.testMethod(), 2);
         assert.ok(!root.parent);
-        assert.equal(root.name, 'test');
+        assert.equal(root.key, 'test');
         var test = root.get('test');
-        assert.equal(test.name, 'test');
+        assert.equal(test.key, 'test');
         assert.equal(test.parent, root);
         assert.equal(test.testAttr2, 2);
         var testItem = test.get('123');
-        assert.equal(testItem.name, '123');
+        assert.equal(testItem.key, '123');
         assert.equal(testItem.parent, test);
         assert.equal(testItem.getId(), 123);
 
