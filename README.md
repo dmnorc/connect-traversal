@@ -5,7 +5,7 @@ connect-traversal is a middleware for Connect and Express framework that allows 
 
 Traversal mechanism is more powerful then Url dispatching and used in popular frameworks such as Rails, Pyramid.
 
-1. For registering new resource just call method where you should specify unique resource name and object with your methods and properties.
+For registering new resource just call method where you should specify unique resource name and object with your methods and properties.
 traversal.registerResource('resourceName', {...});
 
 Resource prototype has methods and properties that can be overridden.
@@ -16,7 +16,7 @@ key: - Resource key
 parent: parent Resource
 options: custom properties can be set here
 resource: resourceName - unique id of resource.
-children: {'key': 'resourceName'} - map of entities (key, resource id) determines children resources through fixed key.
+children: {'key': 'resourceName'} - map of (key, resource id) determining children resources through fixed key.
 child: 'resourceName' - child resource that can be created through a custom id-like key.
 ```
 Methods:
@@ -87,7 +87,10 @@ For auto-creation resource chain on the url in Connect application, this app sho
 var traversal = require('connect-traversal');
 app.use(traversal.middleware);
 ```
-Also paths with callbacks should be registered with traverse.registerPath('resourceName', options, callback1, callback2, ...).
+Also paths with callbacks should be registered:
+```
+traverse.registerPath('resourceName', options, callback1, callback2, ...)
+```
 options object where can be specified HTTP method, parent resource and name appendix for filtering and special behavior.
 {method, parent, name}
 ```
