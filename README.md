@@ -1,4 +1,4 @@
-connect-traversal
+connect-traversal [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
 =================
 
 connect-traversal is a middleware for Connect and Express framework that allows to use URL traversal instead of URL dispatching.
