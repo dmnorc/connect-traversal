@@ -1,9 +1,6 @@
 .npmignore
-
-History.md
 Makefile
-Readme.md
+.travis.yml
 
-examples/
-support/
 test/
+lib-cov/

@@ -1,60 +1,48 @@
-connect-traversal
+connect-traversal [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
 =================
 
 connect-traversal is a middleware for Connect and Express framework that allows to use URL traversal instead of URL dispatching.
 
 Traversal mechanism is more powerful then Url dispatching and used in popular frameworks such as Rails, Pyramid.
 
-Example of usage:
+For registering new resource just call method where you should specify unique resource name and object with your methods and properties.
+traversal.registerResource('resourceName', {...});
 
-Use middleware:
+Resource prototype has methods and properties that can be overridden.
 
+Properties:
 ```
-var traversal = ('connect-traversal');
-
-app.use(traversal.middleware);
-
-
+key: - Resource key
+parent: parent Resource
+options: custom properties can be set here
+resource: resourceName - unique id of resource.
+children: {'key': 'resourceName'} - map of (key, resource id) determining children resources through fixed key.
+child: 'resourceName' - child resource that can be created through a custom id-like key.
+```
+Methods:
+```
+init() - method that triggering in constructor. Here can be specified special actions.
+childValidate(key) - method allows to create special rules for key validation.
+```
+After registration, you can retrieve instance.
+```
+var resource = traversal.initResource('resourceName', 'key', parentResource, options);
+```
+And retrieve for example child resource by key that was specified in children property.
+```
+var childResource  = resource.get('key'); // childResource.parent == resource
 ```
 
-Register resources:
-
+Example:
 ```
-/*
-Resource {req, parent, name}
-*/
-var rootResource = {
-  children: ['users', 'news']
-}
-
-var usersResource = {
-  child: ['user'],
-  childValidate: function(name) {
-    return !!name.match(/\d+/);
-  },
-  createUser: function() {
-    //do something...  
-  }
-}
-
-var userResource = {
-  children: ['news'],
-  getId: function() {
-    return parseInt(this.name);
-  },
-  deleteUser: function() {
-    //do something...  
-  },
-  getUser: function() {
-    //get user by id... 
-  }
-}
+var traversal = require('connect-traversal');
 
 var newsResource = {
   getNews: function() {
-    if (this.parent.__resource__ == 'user') {
+    // Logic depends on parent resource.
+    if (this.parent.resource == 'userResource') {
       // parent resource is UserResource
-      var user = this.parent.getId()
+      var userId = this.parent.key
       // get news for user...
     } else {
       // parent resource is RootResource
@@ -62,20 +50,52 @@ var newsResource = {
     }
   }
 }
+traversal.registerResource('newsResource', newsResource);
 
+var userResource = {
+  children: {'news': 'newsResource'},
+  getUser: function() {
+    ...
+  }
+}
+traversal.registerResource('userResource', userResource);
 
-traverse.registerResource('root', rootResource);
-traverse.registerResource('users', usersResource);
-traverse.registerResource('user', userResource);
-traverse.registerResource('news', newsResource);
+var usersResource = {
+  child: 'userResource',
+  childValidate: function(key) {
+    return !!key.match(/\d+/);
+  }
+}
+traversal.registerResource('usersResource', usersResource);
+
+var rootResource = {
+  children: {
+    'users': 'usersResource',
+    'news': 'newsResource'
+  }
+};
+traversal.registerResource('rootResource', rootResource);
+...
+var root = traversal.initResource('rootResource');
+var user = root.get('users').get('123'); // userResource with key '123'
+var news1 = root.get('news') // newsResource with parent rootResource
+var news2 = user.get('news') // newsResource with parent userResource with key '123'
 ```
 
-Finally register path for each resource. For filtering can be used *HTTP method*, *parent resource name* and *path name* - next part of url after resources chain.
-
-
+For auto-creation resource chain on the url in Connect application, this app should use traversal middleware.
 ```
-// GET /users/user/123
-traverse.registerPath('user', {method: 'get'}, function(req, res) {
+var traversal = require('connect-traversal');
+app.use(traversal.middleware);
+```
+Also paths with callbacks should be registered:
+```
+traverse.registerPath('resourceName', options, callback1, callback2, ...)
+```
+options object where can be specified HTTP method, parent resource and name appendix for filtering and special behavior.
+{method, parent, name}
+```
+// this callbacks will trigger on GET /users/user/123, but for POST 404 will be thrown.
+traverse.registerPath('userResource', {method: 'get'}, function(req, res) {
   var userResource = req.resource //UserResource for user 123
   
   var parent = resource.parent //UsersResource
@@ -83,23 +103,24 @@ traverse.registerPath('user', {method: 'get'}, function(req, res) {
   var anotherUserResource = parent.get('222'); //UserResource for user 222
 });
 
-// GET /users/users/create
-traverse.registerPath('users', {method: 'post', name: 'create'}, function(req, res) {
-  // req.path_name = 'create'
+// will trigger for POST /users/users/create with special appendix path name only
+traverse.registerPath('usersResource', {method: 'post', name: 'create'}, function(req, res) {
+  // req.pathname = 'create'
   var resource = req.resource //UsersResource
 });
 
-// GET /users/users/random/222/333
+// will trigger for GET /users/users/random/222/333 with special appendix path name only
 traverse.registerPath('users', {method: 'post', name: 'random'}, function(req, res) {
-  // req.path_name = 'random'
+  // req.pathname = 'random'
+  // also contains subpath list
   // req.subpath = ['222', '333']
   var resource = req.resource //UsersResource
   res.send('users');
 });
 
-// GET /news
-// GET /users/123/news
-traverse.registerPath('news', {method: 'get'}, function(req, res) {
+// will trigger on GET, POST, any HTTP method /users/123/news
+// but not for /news because of specified parent resource.
+traverse.registerPath('news', {parent: 'userResource'}, function(req, res) {
   req.parent // RootResource
   var resource = req.resource //NewsResource
   res.send(resource.getNews());
