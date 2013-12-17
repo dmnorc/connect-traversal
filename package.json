@@ -1,13 +1,15 @@
 {
   "name": "connect-traversal",
-  "version": "0.1.1",
-  "description": "Middleware for Connect that allows to use URL traversal instead of URL dispatching.",
+  "version": "0.2.0",
+  "description": "Middleware for Connect and Express application which allows to use URL traversal instead of URL dispatching.",
   "keywords": [
     "traverse",
+    "traversal",
     "traversing",
     "connect",
     "express",
-    "dispatch"
+    "dispatch",
+    "dispatching"
   ],
   "author": "Dmitry Sedelnikov <dmnorc@gmail.com>",
   "main": "index.js",
@@ -35,6 +37,6 @@
   ],
   "engines": "node >= 0.6.x",
   "readmeFilename": "README.md",
-  "_id": "connect-traversal@0.1.1",
+  "_id": "connect-traversal@0.2.0",
   "_from": "connect-traversal@latest"
 }

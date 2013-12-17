@@ -115,6 +115,9 @@ describe('Path tests: ', function () {
             assert.ok(!req.subpath);
             assert.equal(req.buildResourceUrl(req.resource), req.url);
             assert.equal(req.resource.parent.resource, 'testResource');
+            assert.equal(req.resource.parent.resource, req.resource.traverseTo('testResource').resource);
+            assert.equal(req.resource.parent.parent.resource, req.resource.traverseTo('rootResource').resource);
+            assert.ok(!req.resource.traverseTo('parResource'));
             res.setHeader("Content-Length", 1);
             res.write("5");
             res.end();

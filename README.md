@@ -1,4 +1,4 @@
-connect-traversal [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
+connect-traversal v0.2 [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
 =================
 
 connect-traversal is a middleware for Connect and Express framework that allows to use URL traversal instead of URL dispatching.
@@ -82,7 +82,7 @@ var news1 = root.get('news') // newsResource with parent rootResource
 var news2 = user.get('news') // newsResource with parent userResource with key '123'
 ```
 
-For auto-creation resource chain on the url in Connect application, this app should use traversal middleware.
+For auto-generating resource chain based on the url in Connect application (in other words to include traversing into Connect-Express app), this app should use traversal middleware.
 ```
 var traversal = require('connect-traversal');
 app.use(traversal.middleware);
@@ -96,33 +96,37 @@ options object where can be specified HTTP method, parent resource and name appe
 ```
 // this callbacks will trigger on GET /users/user/123, but for POST 404 will be thrown.
 traverse.registerPath('userResource', {method: 'get'}, function(req, res) {
-  var userResource = req.resource //UserResource for user 123
+  var userResource = req.resource //userResource for user 123
   
   var parent = resource.parent //UsersResource
   parent.createUser({id: '222'});
-  var anotherUserResource = parent.get('222'); //UserResource for user 222
+  var anotherUserResource = parent.get('222'); //userResource for user 222
+  // req.buildResourceUrl(userResource) is '/users/user/123'
+  // req.buildResourceUrl(userResource, 'blabla') is '/users/user/123/blabla'
+  // req.buildResourceUrl(userResource.parent) is '/users/'
 });
 
-// will trigger for POST /users/users/create with special appendix path name only
+// will trigger for POST /users/create with special appendix path name only
 traverse.registerPath('usersResource', {method: 'post', name: 'create'}, function(req, res) {
   // req.pathname = 'create'
-  var resource = req.resource //UsersResource
+  var resource = req.resource //usersResource
 });
 
-// will trigger for GET /users/users/random/222/333 with special appendix path name only
-traverse.registerPath('users', {method: 'post', name: 'random'}, function(req, res) {
-  // req.pathname = 'random'
+// will trigger for GET /users/random/222/333 with special appendix path name only
+traverse.registerPath('usersResource', {method: 'post', name: 'random'}, function(req, res) {
+  // req.pathname == 'random'
+  // req.resource //UsersResource
   // also contains subpath list
-  // req.subpath = ['222', '333']
-  var resource = req.resource //UsersResource
+  // req.subpath == ['222', '333']
+  var resource = req.resource //usersResource
   res.send('users');
 });
 
 // will trigger on GET, POST, any HTTP method /users/123/news
 // but not for /news because of specified parent resource.
-traverse.registerPath('news', {parent: 'userResource'}, function(req, res) {
-  req.parent // RootResource
-  var resource = req.resource //NewsResource
+traverse.registerPath('newsResource', {parent: 'userResource'}, function(req, res) {
+  var resource = req.resource // newsResource
+  resource.parent // userResource
   res.send(resource.getNews());
 });
 ```
