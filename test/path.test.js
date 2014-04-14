@@ -99,7 +99,10 @@ describe('Path tests: ', function () {
             res.write("3");
             res.end();
         });
-        traversal.registerResourcePath('testResource', {}, function(req, res){
+        traversal.registerResourcePath('testResource', {}, function(req, res, next){
+            assert.ok(!req.pathname);
+            next();
+        }, function(req, res){
             assert.equal(req.resource.resource, 'testResource');
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
