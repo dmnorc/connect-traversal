@@ -1,4 +1,4 @@
-Traversal for Connect application. v0.2 [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
+Traversal for Connect application. v0.3 [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
 =================
 [![NPM](https://nodei.co/npm/connect-traversal.png?stars&downloads)](https://nodei.co/npm/connect-traversal/)
 
@@ -88,15 +88,28 @@ For auto-generating resource chain based on the url in Connect application (in o
 var traversal = require('connect-traversal');
 app.use(traversal.middleware);
 ```
-Also paths with callbacks should be registered:
+Also handlers should be registered:
+.method(method) - specify HTTP method for handlers
+.parent(resourceName) - specify resource parent for handler.
+.name(resourceName) - specify additional name for handler.
+.only() - triggers only the most appropriate handler in chain.
+.all() - this is additional parent subscribers for all child handlers.
 ```
-traverse.registerPath('resourceName', options, callback1, callback2, ...)
+traversal.getResourceChain('resourceName')
+    .all(callback1, callback2, ...) // triggers for all child only()  with any name, method, parent
+    .method('get').all(callback1, callback2, ...) // triggers for all child only() with 'get' method
+    .name('some-name').only(callback1, callback2, ...) // triggers for name 'some-name' and 'get' method.
+    .parent('SomeResource').only(callback1, callback2, ...) // to additional for above only. Only these handlers trigger for for name 'some-name', 'get' method and parent 'SomeResource'
 ```
 options object where can be specified HTTP method, parent resource and name appendix for filtering and special behavior.
 {method, parent, name}
 ```
 // this callbacks will trigger on GET /users/user/123, but for POST 404 will be thrown.
-traverse.registerPath('userResource', {method: 'get'}, function(req, res) {
+traversal.getResourceChain('userResource').all(function(req, res, next) {
+    Subscriber for any userResource path.
+    req.user = req.resource.getUser();
+    next();
+}).method('get').only(function(req, res) {
   var userResource = req.resource //userResource for user 123
   
   var parent = resource.parent //UsersResource
@@ -108,13 +121,13 @@ traverse.registerPath('userResource', {method: 'get'}, function(req, res) {
 });
 
 // will trigger for POST /users/create with special appendix path name only
-traverse.registerPath('usersResource', {method: 'post', name: 'create'}, function(req, res) {
-  // req.pathname = 'create'
-  var resource = req.resource //usersResource
+traversal.getResourceChain('usersResource').method('post').name('create').only(function(req, res) {
+    // req.pathname = 'create'
+    var resource = req.resource //usersResource
 });
 
 // will trigger for GET /users/random/222/333 with special appendix path name only
-traverse.registerPath('usersResource', {method: 'post', name: 'random'}, function(req, res) {
+traversal.getResourceChain('usersResource').method('get').name('random').only(function(req, res) {
   // req.pathname == 'random'
   // req.resource //UsersResource
   // also contains subpath list
@@ -125,7 +138,7 @@ traverse.registerPath('usersResource', {method: 'post', name: 'random'}, functio
 
 // will trigger on GET, POST, any HTTP method /users/123/news
 // but not for /news because of specified parent resource.
-traverse.registerPath('newsResource', {parent: 'userResource'}, function(req, res) {
+traversal.getResourceChain('newsResource').method('*').parent('userResource').only(function(req, res) {
   var resource = req.resource // newsResource
   resource.parent // userResource
   res.send(resource.getNews());

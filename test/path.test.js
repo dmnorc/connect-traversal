@@ -15,7 +15,7 @@ describe('Unregistered path test: ', function () {
 
     it('try to register path for unregistered resource', function (done) {
         try {
-            traversal.registerResourcePath('testResource', {}, function(req, res){});
+            traversal.getResourceChain('testResource', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -24,7 +24,7 @@ describe('Unregistered path test: ', function () {
             testAttr2: 2
         });
         try {
-            traversal.registerResourcePath('testResource', {}, function(req, res){});
+            traversal.getResourceChain('testResource', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -33,21 +33,21 @@ describe('Unregistered path test: ', function () {
         traversal.setRootResource('testResource');
 
         try {
-            traversal.registerResourcePath('asd', {}, function(req, res){});
+            traversal.getResourceChain('asd', {}, function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            traversal.registerResourcePath('testResource', {});
+            traversal.getResourceChain('testResource', {});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            traversal.registerResourcePath('testResource', {}, 'asd');
+            traversal.getResourceChain('testResource', {}, 'asd');
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -73,7 +73,7 @@ describe('Path tests: ', function () {
         traversal.registerResource('parResource', {});
         traversal.setRootResource('rootResource');
 
-        traversal.registerResourcePath('rootResource', {}, function(req, res){
+        traversal.getResourceChain('rootResource').only(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
             assert.ok(!req.pathname);
@@ -81,7 +81,7 @@ describe('Path tests: ', function () {
             res.write("1");
             res.end();
         });
-        traversal.registerResourcePath('rootResource', {method: 'post'}, function(req, res){
+        traversal.getResourceChain('rootResource').method('post').only(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
@@ -89,7 +89,7 @@ describe('Path tests: ', function () {
             res.write("2");
             res.end();
         });
-        traversal.registerResourcePath('rootResource', {method: 'POST', name: 'xxx'}, function(req, res){
+        traversal.getResourceChain('rootResource').method('POST').name('xxx').only(function(req, res){
             assert.ok(req.resource);
             assert.equal(req.resource.resource, 'rootResource');
             assert.equal(req.pathname, 'xxx');
@@ -99,23 +99,30 @@ describe('Path tests: ', function () {
             res.write("3");
             res.end();
         });
-        traversal.registerResourcePath('testResource', {}, function(req, res, next){
-            assert.ok(!req.pathname);
+        traversal.getResourceChain('testResource').only(function(req, res, next){
+            req.checkPrev = true;
             next();
         }, function(req, res){
             assert.equal(req.resource.resource, 'testResource');
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
+            assert.ok(req.checkPrev);
             assert.equal(req.resource.parent.resource, 'rootResource');
             res.setHeader("Content-Length", 1);
             res.write("4");
             res.end();
         });
 
-        traversal.registerResourcePath('parResource', {parent: 'testResource'}, function(req, res){
+        traversal.getResourceChain('parResource').all(function(req, res, next){
+            req.checkPrev = true;
+            next();
+        });
+
+        traversal.getResourceChain('parResource').method('*').parent('testResource').only(function(req, res){
             assert.ok(req.resource);
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
+            assert.ok(req.checkPrev);
             assert.equal(req.buildResourceUrl(req.resource), req.url);
             assert.equal(req.resource.parent.resource, 'testResource');
             assert.equal(req.resource.parent.resource, req.resource.traverseTo('testResource').resource);
