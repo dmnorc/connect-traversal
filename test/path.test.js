@@ -14,17 +14,18 @@ describe('Unregistered path test: ', function () {
     });
 
     it('try to register path for unregistered resource', function (done) {
-        try {
-            traversal.getResourceChain('testResource', {}, function(req, res){});
-            assert.fail();
-        } catch (e) {
-            assert.ok(e);
-        }
         traversal.registerResource('testResource', {
             testAttr2: 2
         });
         try {
-            traversal.getResourceChain('testResource', {}, function(req, res){});
+            traversal.getResourceChain('testResource').only(function(req, res){});
+            assert.fail();
+        } catch (e) {
+            assert.ok(e);
+        }
+
+        try {
+            traversal.getResourceChain('asd').only(function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -33,21 +34,14 @@ describe('Unregistered path test: ', function () {
         traversal.setRootResource('testResource');
 
         try {
-            traversal.getResourceChain('asd', {}, function(req, res){});
+            traversal.getResourceChain('testResource').only();
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            traversal.getResourceChain('testResource', {});
-            assert.fail();
-        } catch (e) {
-            assert.ok(e);
-        }
-
-        try {
-            traversal.getResourceChain('testResource', {}, 'asd');
+            traversal.getResourceChain('testResource').only('asd');
             assert.fail();
         } catch (e) {
             assert.ok(e);
