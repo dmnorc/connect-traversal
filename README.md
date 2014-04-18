@@ -92,14 +92,15 @@ Also handlers should be registered:
 .method(method) - specify HTTP method for handlers
 .parent(resourceName) - specify resource parent for handler.
 .name(resourceName) - specify additional name for handler.
-.only() - triggers only the most appropriate handler in chain.
-.all() - this is additional parent subscribers for all child handlers.
+.options({method: '..' , parent: '..' , name: '..'}) - specify all options for handler. It sets to default nonspecific options
+.view() -  triggers only when it is the most appropriate handler in chain.
+.subscribe() - this is additional parent subscribers for all child handlers.
 ```
 traversal.getResourceChain('resourceName')
-    .all(callback1, callback2, ...) // triggers for all child only()  with any name, method, parent
-    .method('get').all(callback1, callback2, ...) // triggers for all child only() with 'get' method
-    .name('some-name').only(callback1, callback2, ...) // triggers for name 'some-name' and 'get' method.
-    .parent('SomeResource').only(callback1, callback2, ...) // to additional for above only. Only these handlers trigger for for name 'some-name', 'get' method and parent 'SomeResource'
+    .subscribe(callback1, callback2, ...) // triggers for all child view()  with any name, method, parent
+    .method('get').subscribe(callback1, callback2, ...) // triggers for all child view() with 'get' method
+    .name('some-name').view(callback1, callback2, ...) // triggers for name 'some-name' and 'get' method.
+    .parent('SomeResource').view(callback1, callback2, ...) // to additional for above only. Only these handlers trigger for for name 'some-name', 'get' method and parent 'SomeResource'
 ```
 options object where can be specified HTTP method, parent resource and name appendix for filtering and special behavior.
 {method, parent, name}

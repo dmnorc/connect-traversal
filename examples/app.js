@@ -62,13 +62,13 @@ function send(res, body) {
 // Views
 
 traversal.getResourceChain('rootResource')
-    .method('get').only(function(req, res) {
+    .method('get').view(function(req, res) {
         send(res, '<h2>Main page</h2>');
     });
 
 traversal.getResourceChain('usersResource')
     // Create user with id specified in subpath eg: POST /users/create/123
-    .method('post').name('create').only(function(req, res) {
+    .options({method:'post', name: 'create'}).view(function(req, res) {
         var user = {id: req.subpath[0], name: 'Test'};
         req.resource.create(user, function(err, user) {
             send(res, '<h2>Create user</h2>' + JSON.stringify(user));
@@ -77,8 +77,8 @@ traversal.getResourceChain('usersResource')
 
 traversal.getResourceChain('userResource')
     // Subscriber for userResource
-    // get user for all userResource views.
-    .all(function(req, res, next){
+    // get user for userResource views.
+    .subscribe(function(req, res, next){
         req.resource.getUser(function(err, user) {
             if (err) {
                 throw err;
@@ -88,12 +88,12 @@ traversal.getResourceChain('userResource')
         });
     })
     // Profile view. GET /users/:id
-    .method('get').only(function(req, res) {
+    .method('get').view(function(req, res) {
         var root = req.resource.traverseTo('rootResource');
         send(res, root.attr + '<h2>Get user</h2>' + JSON.stringify(req.user));
     })
     // Delete user.  DELETE /users/:id/delete
-    .method('delete').name('delete').only(function(req, res) {
+    .method('delete').name('delete').view(function(req, res) {
         req.resource.delete(function(err, result) {
             send(res, '<h2>User removed</h2>');
         });

@@ -18,14 +18,14 @@ describe('Unregistered path test: ', function () {
             testAttr2: 2
         });
         try {
-            traversal.getResourceChain('testResource').only(function(req, res){});
+            traversal.getResourceChain('testResource').view(function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            traversal.getResourceChain('asd').only(function(req, res){});
+            traversal.getResourceChain('asd').view(function(req, res){});
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -34,14 +34,14 @@ describe('Unregistered path test: ', function () {
         traversal.setRootResource('testResource');
 
         try {
-            traversal.getResourceChain('testResource').only();
+            traversal.getResourceChain('testResource').view();
             assert.fail();
         } catch (e) {
             assert.ok(e);
         }
 
         try {
-            traversal.getResourceChain('testResource').only('asd');
+            traversal.getResourceChain('testResource').view('asd');
             assert.fail();
         } catch (e) {
             assert.ok(e);
@@ -67,7 +67,7 @@ describe('Path tests: ', function () {
         traversal.registerResource('parResource', {});
         traversal.setRootResource('rootResource');
 
-        traversal.getResourceChain('rootResource').only(function(req, res){
+        traversal.getResourceChain('rootResource').view(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
             assert.ok(!req.pathname);
@@ -75,7 +75,7 @@ describe('Path tests: ', function () {
             res.write("1");
             res.end();
         });
-        traversal.getResourceChain('rootResource').method('post').only(function(req, res){
+        traversal.getResourceChain('rootResource').method('post').view(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
@@ -83,7 +83,7 @@ describe('Path tests: ', function () {
             res.write("2");
             res.end();
         });
-        traversal.getResourceChain('rootResource').method('POST').name('xxx').only(function(req, res){
+        traversal.getResourceChain('rootResource').method('POST').name('xxx').view(function(req, res){
             assert.ok(req.resource);
             assert.equal(req.resource.resource, 'rootResource');
             assert.equal(req.pathname, 'xxx');
@@ -93,7 +93,7 @@ describe('Path tests: ', function () {
             res.write("3");
             res.end();
         });
-        traversal.getResourceChain('testResource').only(function(req, res, next){
+        traversal.getResourceChain('testResource').view(function(req, res, next){
             req.checkPrev = true;
             next();
         }, function(req, res){
@@ -107,12 +107,12 @@ describe('Path tests: ', function () {
             res.end();
         });
 
-        traversal.getResourceChain('parResource').all(function(req, res, next){
+        traversal.getResourceChain('parResource').subscribe(function(req, res, next){
             req.checkPrev = true;
             next();
         });
 
-        traversal.getResourceChain('parResource').method('*').parent('testResource').only(function(req, res){
+        traversal.getResourceChain('parResource').method('*').parent('testResource').view(function(req, res){
             assert.ok(req.resource);
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
