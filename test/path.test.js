@@ -93,7 +93,7 @@ describe('Path tests: ', function () {
             res.write("3");
             res.end();
         });
-        traversal.getResourceChain('testResource').view(function(req, res, next){
+        traversal.getResourceChain('testResource').method('*').view(function(req, res, next){
             req.checkPrev = true;
             next();
         }, function(req, res){
@@ -107,7 +107,7 @@ describe('Path tests: ', function () {
             res.end();
         });
 
-        traversal.getResourceChain('parResource').subscribe(function(req, res, next){
+        traversal.getResourceChain('parResource').method('*').subscribe(function(req, res, next){
             req.checkPrev = true;
             next();
         });
