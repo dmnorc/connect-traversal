@@ -91,7 +91,8 @@ app.use(traversal.middleware);
 Also handlers should be registered:
 .method(method) - specify HTTP method for handlers
 .parent(resourceName) - specify resource parent for handler.
-.name(resourceName) - specify additional name for handler.
+.name(name) - specify additional name for handler.
+.xhr(boolean) - specify if only xhr or not.
 .options({method: '..' , parent: '..' , name: '..'}) - specify all options for handler. It sets to default nonspecific options
 .view() -  triggers only when it is the most appropriate handler in chain.
 .subscribe() - this is additional parent subscribers for all child handlers.

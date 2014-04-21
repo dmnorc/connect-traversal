@@ -67,7 +67,7 @@ describe('Path tests: ', function () {
         traversal.registerResource('parResource', {});
         traversal.setRootResource('rootResource');
 
-        traversal.getResourceChain('rootResource').view(function(req, res){
+        traversal.getResourceChain('rootResource').xhr(false).view(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
             assert.ok(!req.pathname);
@@ -137,7 +137,11 @@ describe('Path tests: ', function () {
             .end(function(err, res){
                 if (err) return done(err);
                 assert.equal(res.text, "1");
-                done()
+                request(app)
+                    .get('/')
+                    .set('X-Requested-With', 'XMLHttpRequest')
+                    .expect(404)
+                    .end(done);
             });
     });
 

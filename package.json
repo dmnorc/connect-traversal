@@ -1,6 +1,6 @@
 {
   "name": "connect-traversal",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Middleware for Connect and Express application which allows to use URL traversal instead of URL dispatching.",
   "keywords": [
     "traverse",
@@ -37,6 +37,6 @@
   ],
   "engines": "node >= 0.8.x",
   "readmeFilename": "README.md",
-  "_id": "connect-traversal@0.3.2",
+  "_id": "connect-traversal@0.3.3",
   "_from": "connect-traversal@latest"
 }
