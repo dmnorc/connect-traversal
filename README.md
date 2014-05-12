@@ -109,11 +109,11 @@ options object where can be specified HTTP method, parent resource and name appe
 {method, parent, name}
 ```
 // this callbacks will trigger on GET /users/user/123, but for POST 404 will be thrown.
-traversal.getResourceChain('userResource').all(function(req, res, next) {
+traversal.getResourceChain('userResource').subscribe(function(req, res, next) {
     Subscriber for any userResource path.
     req.user = req.resource.getUser();
     next();
-}).method('get').only(function(req, res) {
+}).method('get').view(function(req, res) {
   var userResource = req.resource //userResource for user 123
   
   var parent = resource.parent //UsersResource
@@ -125,13 +125,13 @@ traversal.getResourceChain('userResource').all(function(req, res, next) {
 });
 
 // will trigger for POST /users/create with special appendix path name only
-traversal.getResourceChain('usersResource').method('post').name('create').only(function(req, res) {
+traversal.getResourceChain('usersResource').method('post').name('create').view(function(req, res) {
     // req.pathname = 'create'
     var resource = req.resource //usersResource
 });
 
 // will trigger for GET /users/random/222/333 with special appendix path name only
-traversal.getResourceChain('usersResource').method('get').name('random').only(function(req, res) {
+traversal.getResourceChain('usersResource').method('get').name('random').view(function(req, res) {
   // req.pathname == 'random'
   // req.resource //UsersResource
   // also contains subpath list
@@ -142,7 +142,7 @@ traversal.getResourceChain('usersResource').method('get').name('random').only(fu
 
 // will trigger on GET, POST, any HTTP method /users/123/news
 // but not for /news because of specified parent resource.
-traversal.getResourceChain('newsResource').method('*').parent('userResource').only(function(req, res) {
+traversal.getResourceChain('newsResource').method('*').parent('userResource').view(function(req, res) {
   var resource = req.resource // newsResource
   resource.parent // userResource
   res.send(resource.getNews());
