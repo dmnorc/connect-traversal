@@ -4,9 +4,9 @@ Traversal for Connect application. v0.3 [![Build Status](https://travis-ci.org/d
 
 connect-traversal is a middleware for Connect and Express framework that allows to use URL traversal instead of URL dispatching.
 
-Traversal mechanism is more powerful then Url dispatching and used in popular frameworks such as Rails, Pyramid.
+Traversal mechanism is more powerful then URL dispatching and used in popular frameworks such as Rails (Ruby), Pyramid (Python).
 
-For registering new resource just call method where you should specify unique resource name and object with your methods and properties.
+For registration of new resource just call method registerResource where you should specify unique resource name and object with your methods and properties.
 traversal.registerResource('resourceName', {...});
 
 Resource prototype has methods and properties that can be overridden.
@@ -17,13 +17,13 @@ key: - Resource key
 parent: parent Resource
 options: custom properties can be set here
 resource: resourceName - unique id of resource.
-children: {'key': 'resourceName'} - map of (key, resource id) determining children resources through fixed key.
-child: 'resourceName' - child resource that can be created through a custom id-like key.
+children: {'key': 'resourceName'} - map of (key, resource id) determining children resources through the static key.
+child: 'resourceName' - child resource that can be created through a custom id-like key (ex:userId).
 ```
 Methods:
 ```
 init() - method that triggering in constructor. Here can be specified special actions.
-childValidate(key) - method allows to create special rules for key validation.
+childValidate(key) - method allows to create special rules for child key validation.
 ```
 After registration, you can retrieve instance.
 ```
@@ -87,16 +87,18 @@ For auto-generating resource chain based on the url in Connect application (in o
 ```
 var traversal = require('connect-traversal');
 app.use(traversal.middleware);
+traversal.setRootResource('rootResource');
 ```
 Also handlers should be registered:
-.method(method) - specify HTTP method for handlers
-.parent(resourceName) - specify resource parent for handler.
-.name(name) - specify additional name for handler.
-.xhr(boolean) - specify if only xhr or not.
+```
+.method(method) - specify HTTP method for handlers (default is get)
+.parent(resourceName) - specify resource parent for handler. (default is '*' - any)
+.name(name) - specify additional name for handler. (default is '')
+.xhr(boolean) - specify if only xhr or not. (default is '*' - any)
 .options({method: '..' , parent: '..' , name: '..'}) - specify all options for handler. It sets to default nonspecific options
 .view() -  triggers only when it is the most appropriate handler in chain.
 .subscribe() - this is additional parent subscribers for all child handlers.
-```
+
 traversal.getResourceChain('resourceName')
     .subscribe(callback1, callback2, ...) // triggers for all child view()  with any name, method, parent
     .method('get').subscribe(callback1, callback2, ...) // triggers for all child view() with 'get' method
