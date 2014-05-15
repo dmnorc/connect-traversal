@@ -105,9 +105,22 @@ traversal.getResourceChain('resourceName')
     .name('some-name').view(callback1, callback2, ...) // triggers for name 'some-name' and 'get' method.
     .parent('SomeResource').view(callback1, callback2, ...) // to additional for above only. Only these handlers trigger for for name 'some-name', 'get' method and parent 'SomeResource'
 ```
-options object where can be specified HTTP method, parent resource and name appendix for filtering and special behavior.
-{method, parent, name}
+options object where can be specified HTTP method, parent resource, ajax and name appendix for filtering and special behavior.
+{method, parent, name, xhr}
 ```
+
+traversal.getResourceChain('usersResource')
+  // this callback will trigger on GET /users/.
+  .method('GET').view(function(req, res) {
+    ...
+  })
+  // this callback will trigger on POST /users/create AJAX and only if parent is rootResource.
+  .options({method: 'POST', name: 'create', xhr: true, parent: 'rootResource'}).view(function(req, res) {
+    ...
+  })
+  
+
+
 // this callbacks will trigger on GET /users/user/123, but for POST 404 will be thrown.
 traversal.getResourceChain('userResource').subscribe(function(req, res, next) {
     Subscriber for any userResource path.
