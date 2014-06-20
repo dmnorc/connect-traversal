@@ -1,12 +1,9 @@
 REPORTER = spec
 
 test:
-	@mocha --reporter $(REPORTER)
+	./node_modules/.bin/mocha --reporter $(REPORTER)
 
-test-cov: lib-cov
-	@CONNECT_TRAVERSAL_COV=1 $(MAKE) -s test REPORTER=html-cov > coverage.html
-
-lib-cov:
-	@jscoverage lib lib-cov
+test-cov:
+	./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec
 
 .PHONY: test test-cov

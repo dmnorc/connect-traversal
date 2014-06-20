@@ -1,7 +1,8 @@
 .npmignore
+.gitignore
 Makefile
 .travis.yml
 
 test/
-lib-cov/
+coverage/
 examples/

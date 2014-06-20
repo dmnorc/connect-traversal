@@ -20,7 +20,8 @@
   "devDependencies": {
     "mocha": ">= 1.x",
     "connect": ">= 1.x",
-    "supertest": "0.11"
+    "supertest": "0.11",
+    "istanbul": "0.2.11"
   },
   "scripts": {
     "test": "make test"
