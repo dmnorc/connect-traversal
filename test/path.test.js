@@ -13,6 +13,15 @@ describe('Unregistered path test: ', function () {
         done();
     });
 
+    var app = connect();
+    app.use(traversal.middleware);
+
+    it('request without Root Resource', function (done) {
+        request(app)
+            .get('/')
+            .expect(404, done);
+    });
+
     it('try to register path for unregistered resource', function (done) {
         traversal.registerResource('testResource', {
             testAttr2: 2
@@ -57,7 +66,7 @@ describe('Path tests: ', function () {
     before(function(done){
         traversal.clear();
         traversal.registerResource('rootResource', {
-            children: {'test': 'testResource', 'par': 'parResource'},
+            children: {'test': 'testResource', 'par': 'parResource', 'no': 'noCallbacksResource'},
             testAttr: 1
         });
         traversal.registerResource('testResource', {
@@ -65,8 +74,8 @@ describe('Path tests: ', function () {
             testAttr2: 2
         });
         traversal.registerResource('parResource', {});
+        traversal.registerResource('noCallbacksResource', {});
         traversal.setRootResource('rootResource');
-
         traversal.getResourceChain('rootResource').xhr(false).view(function(req, res){
             assert.equal(req.resource.resource, 'rootResource');
             assert.ok(!req.subpath);
@@ -145,9 +154,15 @@ describe('Path tests: ', function () {
             });
     });
 
+    it('request to Resource without callbacks', function (done) {
+        request(app)
+            .get('/no')
+            .expect(404, done);
+    });
+
     it('request to Resource with invalid path name', function (done) {
         request(app)
-            .get('/foo')
+            .get('/foo/bar')
             .expect(404)
             .end(function(err, res){
                 assert.equal(res.status , 404);

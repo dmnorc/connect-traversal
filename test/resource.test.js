@@ -41,6 +41,7 @@ describe('Resource register tests: ', function () {
         traversal.setRootResource('rootResource');
 
         var root = traversal.initResource('rootResource', 'test');
+        assert.ok(root.toString().indexOf('rootResource'));
         assert.equal(root.testAttr, 1);
         assert.equal(root.testMethod(), 2);
         assert.ok(!root.parent);
