@@ -1,4 +1,4 @@
-Traversal for Connect application. v0.3 [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
+Traversal for Connect application. v0.3.4 [![Build Status](https://travis-ci.org/dmnorc/connect-traversal.png)](https://travis-ci.org/dmnorc/connect-traversal)
 =================
 [![NPM](https://nodei.co/npm/connect-traversal.png?stars&downloads)](https://nodei.co/npm/connect-traversal/)
 
