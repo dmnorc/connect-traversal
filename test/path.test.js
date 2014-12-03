@@ -121,7 +121,7 @@ describe('Path tests: ', function () {
             next();
         });
 
-        traversal.getResourceChain('parResource').method('*').parent('testResource').view(function(req, res){
+        traversal.getResourceChain('parResource').method('*').parent('testResource').xhr(true).view(function(req, res){
             assert.ok(req.resource);
             assert.ok(!req.pathname);
             assert.ok(!req.subpath);
@@ -216,11 +216,18 @@ describe('Path tests: ', function () {
     it('request to children Resource with specified parent', function(done) {
         request(app)
             .post('/test/par')
+            .set('X-Requested-With', 'XMLHttpRequest')
             .expect(200)
             .end(function(err, res){
                 if (err) return done(err);
                 assert.equal(res.text, "5");
                 done()
             });
+    });
+
+    it('request to children Resource with specified parent', function(done) {
+        request(app)
+            .post('/test/par')
+            .expect(404, done);
     });
 });
